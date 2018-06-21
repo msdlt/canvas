@@ -1,31 +1,15 @@
-/*
- * JS to resize H5P in a frame
- */
-/*var h5pScript = document.createElement('script');
-h5pScript.setAttribute('charset', 'UTF-8');
-h5pScript.setAttribute('src', 'https://h5p.org/sites/all/modules/h5p/library/js/h5p-resizer.js');
-document.body.appendChild(h5pScript);*/
-
-/* Global variables */
-var courseId = ENV.COURSE_ID;// || ENV.course_id;
-//used in Modules page
-var moduleNav;
-
-var divCourseHomeContent = document.getElementById('course_home_content');
-//var divContextModulesContainer = document.getElementById('context_modules_sortable_container');
-//var divContextModulesTitle = document.querySelectorAll('.context-modules-title')[0];
-
-var divPageTitle = document.querySelectorAll('.page-title')[0];
-
-
-/* all Canvas web pages seem to contain:
+/** Development notes
 
 ...Thinking maybe that we look for ENV.COURSE_ID and, if there, we know that we're in a course and so can just wrap div#content and place menu on right of that...
 BUT maybe hide on index pages for modules, announcements, discssions, etc where we already have a RH bar...
 
+All Canvas web pages seem to contain:
+
 div#content
 div#content-wrapper
-Inside these - child of div#content but maybe with other siblings (in brackets is ENV variable that uniquely tells us we are in the page type) foolowed by how e might get identifier for this page to match up with/modules api feed 
+
+Inside these: (child of div#content but maybe with other siblings (in brackets is ENV variable that uniquely tells us we are in the page type) foolowed by how e might get identifier for this page to match up with/modules api feed)
+
 Home: 			div#course_home_content											n/a
 Discussions: 	div.discussion-collections 			(ENV.openTopics)			n/a
 Discussion: 	div#discussion_container 			(ENV.DISCUSSION) 			ENV.DISCUSSION.TOPIC.ID/Module | Item | content_id
@@ -47,7 +31,8 @@ Chat: 																			NOTE: Chat doesn't expose ENV.COURSE_ID (although does 
 Attendance: 																	NOTE: Attendance doesn't expose ENV.COURSE_ID so menu won't be shown!
 Settings: 		div#course_details_tabs				(ENV.SETTINGS)				n/a
 
-Things which can be added to a module and will therefore appear in Modules api feed
+Things which can be added to a module and may therefore appear in Modules api feed:
+
 Assignment
 Quiz
 File
@@ -57,6 +42,17 @@ Text header
 External URL
 External tool
 */
+
+
+/* Global variables */
+var courseId = ENV.COURSE_ID;// || ENV.course_id;
+//used in Modules page
+var moduleNav;
+
+var divCourseHomeContent = document.getElementById('course_home_content');
+var divPageTitle = document.querySelectorAll('.page-title')[0];
+
+
 
 var divContent = document.getElementById('content');
 var moduleColours = ['#e8ab1e','#91b2c6','#517f96','#1c4f68','#400b42','#293f11','#640D14','#b29295','#002147'];
@@ -145,7 +141,6 @@ function getModulesForPage(courseId, userId) {
 			/* Create page structure */
 			//get Content div
 			var divContent = document.getElementById('content');
-			//var divWikiPage = document.getElementById('wiki_page_show');
 			
 			//let's start by creating a content-wrapper and moving divContent into it
 			//TODO going to have to put div names/classes into an array to move
@@ -158,11 +153,6 @@ function getModulesForPage(courseId, userId) {
 			divContent.classList.add("col-xl-11");
 			wrap(divContent, divContentWrapper);
 			
-			/*divWikiPage.classList.add("col-xs-12");
-			divWikiPage.classList.add("col-sm-9");
-			divWikiPage.classList.add("col-lg-10");
-			divWikiPage.classList.add("col-xl-11");
-			wrap(divWikiPage, divContentWrapper);*/
 			//now add 
 			var divMenuWrapper = document.createElement('div');
 			divMenuWrapper.classList.add("col-xs-12");
@@ -174,8 +164,7 @@ function getModulesForPage(courseId, userId) {
 			//adding click event listener to divMenuWrapper to ensure it is there 
 			//menu items themselves won't exist yet
 			divMenuWrapper.addEventListener('click',function(e){
-				//console.log('clicked');
-				if(e.target && (e.target.className.match(/\bou-module-title\b/) || e.target.className.match(/\bou-module-arrow\b/))){
+				if(e.target && (e.target.className.match(/\bou-menu-module-title\b/) || e.target.className.match(/\bou-menu-module-arrow\b/))){
 					//click on either div with class=ou-module-title or <i> class=ou-module-arrow 
 					var moduleId = e.target.getAttribute('data-module-id');
 					var targetItemsId = 'ouModuleItemsWrappper_' + moduleId;
@@ -202,7 +191,7 @@ function getModulesForPage(courseId, userId) {
 				//create module div
 				var newModule = document.createElement('div');
 				newModule.className = 'ou-module-wrapper';
-				newModule.innerHTML = '<div class="ou-module-title" title="' + moduleName + '" data-module-id="' + moduleId + '"><i id="ouModuleTitleArrow_' + moduleId + '" class="icon-mini-arrow-right ou-module-arrow" data-module-id="' + moduleId + '"></i> ' + moduleName + '</div>';
+				newModule.innerHTML = '<div class="ou-menu-module-title" title="' + moduleName + '" data-module-id="' + moduleId + '"><i id="ouModuleTitleArrow_' + moduleId + '" class="icon-mini-arrow-right ou-menu-module-arrow" data-module-id="' + moduleId + '"></i> ' + moduleName + '</div>';
 				var moduleItemsWrapper = document.createElement('div');
 				moduleItemsWrapper.className = 'toggle-content';
 				moduleItemsWrapper.id = 'ouModuleItemsWrappper_'+moduleId;
@@ -234,7 +223,7 @@ function getModulesForPage(courseId, userId) {
 							iconType = "icon-document";
 					}
 					var newItem = document.createElement('div');
-					newItem.className = 'ou-item-wrapper';
+					newItem.className = 'ou-menu-item-wrapper';
 					var itemLink = 'https://universityofoxford.instructure.com/courses/' + courseId + '/modules/items/' + itemId;  //construct hopefully app-compatible URL
 					newItem.innerHTML = '<a class="'+iconType+'" title="'+itemTitle+'" href="'+itemLink+'">'+itemTitle+'</a>';
 					moduleItemsWrapper.appendChild(newItem); //add item to module
@@ -246,7 +235,7 @@ function getModulesForPage(courseId, userId) {
 							//we're processing a wiki page
 							if(ENV.WIKI_PAGE.url==item.page_url) {
 								moduleItemsWrapper.classList.add('is-visible');
-								newItem.classList.add('ou-active');
+								newItem.classList.add('ou-menu-item-active');
 							}
 						}
 					}

@@ -3,14 +3,14 @@
   border-radius: .25rem!important;
 }
 /* for items in rh menu */
-.ou-item-wrapper {
+.ou-menu-item-wrapper {
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
   padding-left: 3px;
 }
 
-.ou-module-title {
+.ou-menu-module-title {
   white-space: nowrap; 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -24,15 +24,13 @@
   display: block;
 }
 
-div.ou-active{
+div.ou-menu-item-active{
   background-color: var(--ic-brand-primary);
-  font-weight: bold;
-  color: #fff;
   border-radius: 3px;
   /*padding-left: 3px;*/
 }
 
-div.ou-active a{
+div.ou-menu-item-active a{
   font-weight: bold;
   color: #fff;
 }
