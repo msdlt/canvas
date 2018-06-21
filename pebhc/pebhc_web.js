@@ -52,6 +52,17 @@ var moduleNav;
 var divCourseHomeContent = document.getElementById('course_home_content');
 var divPageTitle = document.querySelectorAll('.page-title')[0];
 
+var dontShowMenuOnTheseElementIds=new Array(
+    'course_home_content', 
+    'context_modules',
+    'course_details_tabs'
+    );
+var dontShowMenuOnTheseElementClasses=new Array(
+    'discussion-collections', 
+    'announcements-v2__wrapper',
+    'ef-main'
+    );
+
 
 
 var divContent = document.getElementById('content');
@@ -67,8 +78,8 @@ function insertAfter(newNode, referenceNode) {
 function domReady () {
 	//populate progress bars
 	showProgressBars();
-	if(divContent && courseId && courseId==2777){
-		console.log("I'm in a course");
+	if(divContent && courseId && courseId==2777 && elementsWithTheseIdsDontExist(dontShowMenuOnTheseElementIds) && elementsWithTheseClassesDontExist(dontShowMenuOnTheseElementClasses)){
+		//console.log("I'm in a course");
 		getSelfThenModulesForPage();
 	} else if(divCourseHomeContent){
 		//we're in a home page
@@ -118,10 +129,33 @@ function getSelfThenModulesForPage() {
 	);
 }
 
+function elementsWithTheseIdsDontExist(ids) {
+    for(var i = 0; i < ids.length; i++) {
+        console.log(ids[i]);
+        console.log(document.getElementById(ids[i]));
+        if(document.getElementById(ids[i])!==null){
+            return false; //it does exist
+        }
+    }
+    return true;
+}
+
+function elementsWithTheseClassesDontExist(classes) {
+   for(var i = 0; i < classes.length; i++) {
+        console.log(classes[i]);
+        console.log(document.querySelectorAll(classes[i])[0]);
+        if(document.querySelectorAll(classes[i]).length!==0){
+            return false; //it does exist
+        }
+    }
+    return true;
+}
+
 /*
  * Get modules and items for courseId
  * @param {number} courseId - ID of course
  * @param {number} userId - ID of user - used to return progress info.
+ * TODO make userId optional
  */
 function getModulesForPage(courseId, userId) {
 	var csrfToken = getCsrfToken();
@@ -136,7 +170,6 @@ function getModulesForPage(courseId, userId) {
 		.then(status)
 		.then(json)
 		.then(function(data) {
-			//var newRow; //store parent row to append to between iterations
 			
 			/* Create page structure */
 			//get Content div
