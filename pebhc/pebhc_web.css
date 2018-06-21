@@ -1,0 +1,39 @@
+/* for rounding edge of thumbnail images */
+.ou-rounded {
+  border-radius: .25rem!important;
+}
+/* for items in rh menu */
+.ou-item-wrapper {
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 3px;
+}
+
+.ou-module-title {
+  white-space: nowrap; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toggle-content {
+  display: none;
+}
+
+.toggle-content.is-visible {
+  display: block;
+}
+
+div.ou-active{
+  background-color: var(--ic-brand-primary);
+  font-weight: bold;
+  color: #fff;
+  border-radius: 3px;
+  /*padding-left: 3px;*/
+}
+
+div.ou-active a{
+  font-weight: bold;
+  color: #fff;
+}
+    
