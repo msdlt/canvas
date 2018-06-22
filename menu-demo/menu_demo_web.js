@@ -38,7 +38,7 @@ var divContent = document.getElementById('content');
 
 /* Trying plain JS so that it works in the app as well */
 function domReady () {
-	if(divContent && courseId && courseId==2777 && elementsWithTheseIdsDontExist(dontShowMenuOnTheseElementIds) && elementsWithTheseClassesDontExist(dontShowMenuOnTheseElementClasses)){
+	if(divContent && courseId && elementsWithTheseIdsDontExist(dontShowMenuOnTheseElementIds) && elementsWithTheseClassesDontExist(dontShowMenuOnTheseElementClasses)){ //&& courseId==2777 && moduleItemId
 		getSelfThenModulesForPage();
 	} 
 }
@@ -222,7 +222,7 @@ function getModulesForPage(courseId, userId) {
 					}
 					var newItem = document.createElement('div');
 					newItem.className = 'ou-menu-item-wrapper';
-					var itemLink = 'https://universityofoxford.instructure.com/courses/' + courseId + '/modules/items/' + itemId;  //construct hopefully app-compatible URL
+					var itemLink = 'https://yourinstitution.instructure.com/courses/' + courseId + '/modules/items/' + itemId;  //construct hopefully app-compatible URL
 					newItem.innerHTML = '<a class="'+iconType+'" title="'+itemTitle+'" href="'+itemLink+'">'+itemTitle+'</a>';
 					moduleItemsWrapper.appendChild(newItem); //add item to module
 					
@@ -365,9 +365,8 @@ function getParameterByName(name, url) {
 }
 
 /**
- * Function which gets query string parameters by name - see: https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
- * @param {string} name - name of query parameter
- * @param {string} [url=window.location.href] - url 
+ * Function which gets the course id either from the ENV or from the URL
+ * @returns {string} courseId or null
  */
 function getCourseId() {
     var courseId = ENV.COURSE_ID || ENV.course_id;
