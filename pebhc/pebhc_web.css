@@ -2,7 +2,15 @@
 .ou-rounded {
   border-radius: .25rem!important;
 }
-/* for items in rh menu */
+/* for rh menu */
+
+.ou-menu-wrapper {
+  padding: 24px 24px 24px 0px;
+}
+ou-menu-wrapper-in-right-side {
+  padding: 0px; /*get rid of passing if showing in right-side-wrapper*/
+}
+
 .ou-menu-item-wrapper {
   white-space: nowrap; 
   overflow: hidden;

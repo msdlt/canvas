@@ -45,64 +45,39 @@ External tool
 
 
 /* Global variables */
-var courseId = ENV.COURSE_ID;// || ENV.course_id;
-//used in Modules page
-var moduleNav;
+var courseId = getCourseId(); //which course are we in
+var moduleItemId = getParameterByName('module_item_id');  //where courseId doesn't exist 
 
-var divCourseHomeContent = document.getElementById('course_home_content');
 var divPageTitle = document.querySelectorAll('.page-title')[0];
 
+/* list of pages to exclude from menu-showing */
+/*Note that Conferences, Collaborations, Chat and Attendance pages don't expose ENV.COURSE_ID (although does have ENV.course_id) so menu won't be shown anyway...so no need to exclude */
 var dontShowMenuOnTheseElementIds=new Array(
-    'course_home_content', 
-    'context_modules',
-    'course_details_tabs'
+    'course_home_content', //Home page
+    'context_modules', //Modules page
+    'course_details_tabs' //Settings page
     );
 var dontShowMenuOnTheseElementClasses=new Array(
-    'discussion-collections', 
-    'announcements-v2__wrapper',
-    'ef-main'
+    'discussion-collections', //Discussions page
+    'announcements-v2__wrapper', //Announcements page
+    'ef-main', //Files page
+    'edit-content'  //editing a wiki page
     );
 
-
+/* list of pages where we want menu in right-side-wrapper */
+var putMenuInRightSideOnTheseElementIds=new Array(
+    'discussion_container', //showing a discussion
+    'quiz_show', //showing a quiz
+    'assignment_show' //showing an asignment
+    );
 
 var divContent = document.getElementById('content');
-var moduleColours = ['#e8ab1e','#91b2c6','#517f96','#1c4f68','#400b42','#293f11','#640D14','#b29295','#002147'];
-var delimiter = '.' //The character used to separate your module name and module description
-
-//From: https://stackoverflow.com/questions/4793604/how-to-insert-an-element-after-another-element-in-javascript-without-using-a-lib
-function insertAfter(newNode, referenceNode) {
-    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-}
 
 /* Trying plain JS so that it works in the app as well */
 function domReady () {
-	//populate progress bars
-	showProgressBars();
 	if(divContent && courseId && courseId==2777 && elementsWithTheseIdsDontExist(dontShowMenuOnTheseElementIds) && elementsWithTheseClassesDontExist(dontShowMenuOnTheseElementClasses)){
-		//console.log("I'm in a course");
 		getSelfThenModulesForPage();
-	} else if(divCourseHomeContent){
-		//we're in a home page
-		rewriteModuleLinks();
-	}
-}
-
-//Function to work out when the DOM is ready: https://stackoverflow.com/questions/1795089/how-can-i-detect-dom-ready-and-add-a-class-without-jquery/1795167#1795167
-// Mozilla, Opera, Webkit 
-if ( document.addEventListener ) {
-	document.addEventListener( "DOMContentLoaded", function(){
-		document.removeEventListener( "DOMContentLoaded", arguments.callee, false);
-		domReady();
-	}, false );
-// If IE event model is used
-} else if ( document.attachEvent ) {
-	// ensure firing before onload
-	document.attachEvent("onreadystatechange", function(){
-		if ( document.readyState === "complete" ) {
-			document.detachEvent( "onreadystatechange", arguments.callee );
-			domReady();
-		}
-	});
+	} 
 }
 
 /**
@@ -129,10 +104,13 @@ function getSelfThenModulesForPage() {
 	);
 }
 
+/*
+ * Do any elements with these ids exist in the document
+ * @param {string} ids[] - ids to look for
+ * @returns {boolean}
+ */
 function elementsWithTheseIdsDontExist(ids) {
     for(var i = 0; i < ids.length; i++) {
-        console.log(ids[i]);
-        console.log(document.getElementById(ids[i]));
         if(document.getElementById(ids[i])!==null){
             return false; //it does exist
         }
@@ -140,11 +118,16 @@ function elementsWithTheseIdsDontExist(ids) {
     return true;
 }
 
+/*
+ * Do any elements with these classes exist in the document
+ * @param {string} classes[] - classes to look for
+ * @returns {boolean}
+ */
 function elementsWithTheseClassesDontExist(classes) {
    for(var i = 0; i < classes.length; i++) {
-        console.log(classes[i]);
-        console.log(document.querySelectorAll(classes[i])[0]);
-        if(document.querySelectorAll(classes[i]).length!==0){
+       console.log(classes[i]);
+       console.log(document.querySelectorAll('.'+classes[i]));
+       if(document.querySelectorAll('.'+classes[i]).length!==0){
             return false; //it does exist
         }
     }
@@ -170,29 +153,34 @@ function getModulesForPage(courseId, userId) {
 		.then(status)
 		.then(json)
 		.then(function(data) {
-			
-			/* Create page structure */
-			//get Content div
-			var divContent = document.getElementById('content');
-			
-			//let's start by creating a content-wrapper and moving divContent into it
-			//TODO going to have to put div names/classes into an array to move
-			var divContentWrapper = document.createElement('div');
-			divContentWrapper.className = "ou-content-wrapper grid-row";
-			
-			divContent.classList.add("col-xs-12");
-			divContent.classList.add("col-sm-9");
-			divContent.classList.add("col-lg-10");
-			divContent.classList.add("col-xl-11");
-			wrap(divContent, divContentWrapper);
-			
-			//now add 
-			var divMenuWrapper = document.createElement('div');
-			divMenuWrapper.classList.add("col-xs-12");
-			divMenuWrapper.classList.add("col-sm-3");
-			divMenuWrapper.classList.add("col-lg-2");
-			divMenuWrapper.classList.add("col-xl-1");
-			divContentWrapper.appendChild(divMenuWrapper); //add module to content
+			if(elementsWithTheseIdsDontExist(putMenuInRightSideOnTheseElementIds)) {
+                /* In most cases, create a new column for the menu: creating a content-wrapper and moving divContent into it*/
+                var divContentWrapper = document.createElement('div');
+                divContentWrapper.className = "ou-content-wrapper grid-row";
+
+                divContent.classList.add("col-xs-12");
+                divContent.classList.add("col-sm-9");
+                divContent.classList.add("col-lg-10");
+                divContent.classList.add("col-xl-11");
+                wrap(divContent, divContentWrapper);
+
+                //now add divMenuWrapper
+                var divMenuWrapper = document.createElement('div');
+                divMenuWrapper.classList.add("ou-menu-wrapper");
+                divMenuWrapper.classList.add("col-xs-12");
+                divMenuWrapper.classList.add("col-sm-3");
+                divMenuWrapper.classList.add("col-lg-2");
+                divMenuWrapper.classList.add("col-xl-1");
+                divContentWrapper.appendChild(divMenuWrapper); //add module to content
+            } else {
+                /* Where page contains div with id in putMenuInRightSideOnTheseElementIds, append the menu to div#right-side-wrapper */
+                //TODO use a combination of ENV variables OR div ids and classes to reduce breakages on interface change
+                var divRightSideWrapper = document.getElementById('right-side-wrapper');
+                //now add divMenuWrapper
+                var divMenuWrapper = document.createElement('div');
+                divMenuWrapper.classList.add("ou-menu-wrapper-in-right-side");
+                divRightSideWrapper.appendChild(divMenuWrapper); //add module to content
+            }
 			
 			//adding click event listener to divMenuWrapper to ensure it is there 
 			//menu items themselves won't exist yet
@@ -224,7 +212,21 @@ function getModulesForPage(courseId, userId) {
 				//create module div
 				var newModule = document.createElement('div');
 				newModule.className = 'ou-module-wrapper';
-				newModule.innerHTML = '<div class="ou-menu-module-title" title="' + moduleName + '" data-module-id="' + moduleId + '"><i id="ouModuleTitleArrow_' + moduleId + '" class="icon-mini-arrow-right ou-menu-module-arrow" data-module-id="' + moduleId + '"></i> ' + moduleName + '</div>';
+                //div for module name and arrow
+                var newModuleName = document.createElement('div');
+                newModuleName.className = 'ou-menu-module-title';
+                newModuleName.setAttribute('title', moduleName);
+                newModuleName.setAttribute('data-module-id', moduleId);
+                //i for arrow
+                var newModuleArrow = document.createElement('i');
+                newModuleArrow.classList.add('icon-mini-arrow-right');
+                newModuleArrow.classList.add('ou-menu-module-arrow');
+                newModuleArrow.setAttribute('id', 'ouModuleTitleArrow_' + moduleId);
+                newModuleArrow.setAttribute('data-module-id', moduleId);
+                newModuleName.appendChild(newModuleArrow);
+                newModuleName.appendChild(document.createTextNode(moduleName));
+                newModule.appendChild(newModuleName); //add module name to module wrapper
+				//newModule.innerHTML = '<div class="ou-menu-module-title" title="' + moduleName + '" data-module-id="' + moduleId + '"><i id="ouModuleTitleArrow_' + moduleId + '" class="icon-mini-arrow-right ou-menu-module-arrow" data-module-id="' + moduleId + '"></i> ' + moduleName + '</div>';
 				var moduleItemsWrapper = document.createElement('div');
 				moduleItemsWrapper.className = 'toggle-content';
 				moduleItemsWrapper.id = 'ouModuleItemsWrappper_'+moduleId;
@@ -261,22 +263,55 @@ function getModulesForPage(courseId, userId) {
 					newItem.innerHTML = '<a class="'+iconType+'" title="'+itemTitle+'" href="'+itemLink+'">'+itemTitle+'</a>';
 					moduleItemsWrapper.appendChild(newItem); //add item to module
 					
-					/* Check if this is the live item and leave menu open if it is */
+				    /* Check if this is the live item and leave menu open if it is */
+                    var activateIt = false;
 					if(ENV.WIKI_PAGE){
 						//we're in a wiki page
 						if(item.page_url){
 							//we're processing a wiki page
 							if(ENV.WIKI_PAGE.url==item.page_url) {
-								moduleItemsWrapper.classList.add('is-visible');
-								newItem.classList.add('ou-menu-item-active');
+								activateIt = true;
 							}
 						}
+					} else if (ENV.DISCUSSION && ENV.DISCUSSION.TOPIC) {
+                        //we're in a discussion
+                        if(item.content_id){
+							//we're processing a discussion page
+							if(ENV.DISCUSSION.TOPIC.ID==item.content_id) {
+								activateIt = true;
+							}
+						}
+                    } else if (ENV.QUIZ) {
+                        //we're in a quiz/survey
+                        if(item.content_id){
+							//we're processing a quiz/survey page
+							if(ENV.QUIZ.id==item.content_id) {
+								activateIt = true;
+							}
+						}
+                    } else if (ENV.ASSIGNMENT_ID) {
+                        //we're in an assignment
+                        if(item.content_id){
+							//we're processing an assignment
+							if(ENV.ASSIGNMENT_ID==item.content_id) {
+								activateIt = true;
+							}
+						}
+                    } else if (moduleItemId && parseInt(moduleItemId)===parseInt(item.id)) {
+                        //we're in something else but inside a module
+                        activateIt = true;
 					}
-					
-					
+                    if(activateIt){
+                        /* open relevenat module and highlight active item */
+                        moduleItemsWrapper.classList.add('is-visible');
+				        newItem.classList.add('ou-menu-item-active'); 
+                        /* change module arrow from right to down */ 
+                        newModuleArrow.classList.remove('icon-mini-arrow-right')
+				        newModuleArrow.classList.add('icon-mini-arrow-down');
+                    }
 				});
 				
-				divMenuWrapper.appendChild(newModule); //add module to content
+				divMenuWrapper.appendChild(newModule); //add module to menu
 			
 			});
 		})
@@ -286,64 +321,26 @@ function getModulesForPage(courseId, userId) {
 	);
 }
 
-/*
- * Function which replaces all <div id="module_x" class="ou-insert-progress-bar">y</div> with graphical progress bars
- * x = module number
- * y = % complete
- */
-function showProgressBars() {
-	//get all elements with classname ou-insert-progress-bar
-	var progressBarPlaceholders = document.getElementsByClassName('ou-insert-progress-bar');
-	Array.prototype.forEach.call(progressBarPlaceholders, function(progressBarPlaceholder) {
-		var value = progressBarPlaceholder.innerHTML;
-		var className = progressBarPlaceholder.id;
-		//UC first letter
-		var viewName = className.toLowerCase().replace(/\b[a-z]/g, function(letter) {
-			return letter.toUpperCase();
-		});
-		//replace underscore with space
-		viewName = viewName.replace(/_/g, ' ');
-		//create our new element
-		var progressBarContainer = document.createElement("div");
-		progressBarContainer.innerHTML = ''+
-				'<h4 class="ou-space-before-progress-bar">Current position in ' + viewName + ':</h4>' +
-				'<div class="ou-ProgressBar ' + className + '" style="width: 100%; height: 15px;" role="progressbar" aria-valuemax="100" aria-valuemin="0" aria-valuenow="'+ value +'">' +
-				'	<div class="ou-ProgressBarBar" style="width: '+ value +'%;" title="'+ value +'%"></div>' +
-				'</div>';
-		//insert it after the placeholder using the function insertAfter
-		insertAfter(progressBarContainer, progressBarPlaceholder);
-		//now delete the placeholder
-		progressBarPlaceholder.parentNode.removeChild(progressBarPlaceholder);
+/* Utility functions */
+
+//Function to work out when the DOM is ready: https://stackoverflow.com/questions/1795089/how-can-i-detect-dom-ready-and-add-a-class-without-jquery/1795167#1795167
+// Mozilla, Opera, Webkit 
+if ( document.addEventListener ) {
+	document.addEventListener( "DOMContentLoaded", function(){
+		document.removeEventListener( "DOMContentLoaded", arguments.callee, false);
+		domReady();
+	}, false );
+// If IE event model is used
+} else if ( document.attachEvent ) {
+	// ensure firing before onload
+	document.attachEvent("onreadystatechange", function(){
+		if ( document.readyState === "complete" ) {
+			document.detachEvent( "onreadystatechange", arguments.callee );
+			domReady();
+		}
 	});
 }
 
-/*
- * Rewriting links in the format https://oxforduniversity.instructure.com/courses/[courseId]/modules/[moduleId]/items/first
- * which works in the app by taking users to the Modules page and opens the appropriate Module
- * However, in the web app, we need to rewrite this to go to the appropriate anchor on the Modules page
- */
-function rewriteModuleLinks() {
-	var moduleLinks = document.getElementsByTagName('a'), i;
-    for (i in moduleLinks) {
-        var cn = moduleLinks[i].className;
-		var matchClass = "ou-ModuleLink";
-        if(cn && cn.match(new RegExp("(^|\\s)" + matchClass + "(\\s|$)"))) {
-			moduleLinks[i].onclick = function(event) {
-				var destination = event.currentTarget.href;  //attached to the a, even if user clicked something inside the a
-				var destinationParts = destination.split('/');
-				j=0;
-				while (destinationParts[j]!="modules"){
-					j=j+1;
-				}
-				var moduleId = destinationParts[j + 1];
-				window.location = "https://oxforduniversity.instructure.com/courses/" + courseId + "/modules" + "#module_" + moduleId;
-				return false;  //prevent default
-			}
-        }
-    }
-}
-
-/* Utility functions */
 /*
  * Function which returns a promise (and error if rejected) if response status is OK
  */
@@ -388,3 +385,34 @@ var wrap = function (toWrap, wrapper) {
     toWrap.parentNode.appendChild(wrapper);
     return wrapper.appendChild(toWrap);
 };
+
+/**
+ * Function which gets query string parameters by name - see: https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+ * @param {string} name - name of query parameter
+ * @param {string} [url=window.location.href] - url 
+ */
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+/**
+ * Function which gets query string parameters by name - see: https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+ * @param {string} name - name of query parameter
+ * @param {string} [url=window.location.href] - url 
+ */
+function getCourseId() {
+    var courseId = ENV.COURSE_ID || ENV.course_id;
+    if(!courseId){
+        var urlPartIncludingCourseId = window.location.href.split("courses/")[1]; 
+        if(urlPartIncludingCourseId) {
+            courseId = urlPartIncludingCourseId.split("/")[0];    
+        }
+    }
+    return courseId;
+}
