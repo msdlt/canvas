@@ -21,7 +21,8 @@ var dontShowMenuOnTheseElementIds=new Array(
     'course_details_tabs', //Settings page
     'syllabusContainer', //Syllabus page
     'collaborations', //Collaborations page
-    'edit_assignment_form' //assignment edit form
+    'edit_assignment_form', //assignment edit form
+    'discussion-edit-view' //editing discussion
     );
 var dontShowMenuOnTheseElementClasses=new Array(
     'discussion-collections', //Discussions page
