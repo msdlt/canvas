@@ -1,9 +1,14 @@
-/* for rounding edge of thumbnail images */
+/* BEGIN rounding edge of thumbnail images */
 .ou-rounded {
   border-radius: .25rem!important;
 }
-/* for rh menu */
-
+/* END rounding edge of thumbnail images */
+/* BEGIN fix for weird right-margin problem on grid-row with the menu warpper */
+.ou-content-wrapper {
+  margin-right: 0px!important;
+}
+/* END fix for weird right-margin problem on grid-row with the menu warpper */
+/* BEGIN styles for rh menu */
 .ou-menu-wrapper {
   padding: 24px 24px 24px 0px;
 }
@@ -41,5 +46,33 @@ div.ou-menu-item-active{
 div.ou-menu-item-active a{
   font-weight: bold;
   color: #fff;
+}
+/* END styles for rh menu */
+/* BEGIN responsive embed styles - see https://learntech.imsu.ox.ac.uk/blog/styling-instructure-canvas */
+.ou-embed-responsive {
+  position: relative;
+  display: block;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.ou-embed-responsive .embed-responsive-item,
+.ou-embed-responsive iframe,
+.ou-embed-responsive embed,
+.ou-embed-responsive object,
+.ou-embed-responsive video {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.ou-embed-responsive-16by9 {
+  padding-bottom: 56.25%;
+}
+.ou-embed-responsive-4by3 {
+  padding-bottom: 75%;
 }
     

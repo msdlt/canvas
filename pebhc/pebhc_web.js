@@ -18,13 +18,17 @@ var divPageTitle = document.querySelectorAll('.page-title')[0];
 var dontShowMenuOnTheseElementIds=new Array(
     'course_home_content', //Home page
     'context_modules', //Modules page
-    'course_details_tabs' //Settings page
+    'course_details_tabs', //Settings page
+    'syllabusContainer', //Syllabus page
+    'collaborations', //Collaborations page
+    'edit_assignment_form' //assignment edit form
     );
 var dontShowMenuOnTheseElementClasses=new Array(
     'discussion-collections', //Discussions page
     'announcements-v2__wrapper', //Announcements page
     'ef-main', //Files page
-    'edit-content'  //editing a wiki page
+    'edit-content',  //editing a wiki page
+    'tool_content_wrapper'  //External tools (e.g Chat, Attendance) which don't appear to like the menu
     );
 
 /* list of pages where we want menu in right-side-wrapper */
@@ -118,22 +122,26 @@ function getModulesForPage(courseId, userId) {
 		.then(function(data) {
 			if(elementsWithTheseIdsDontExist(putMenuInRightSideOnTheseElementIds)) {
                 /* In most cases, create a new column for the menu: creating a content-wrapper and moving divContent into it*/
+                //var divContentBox = document.createElement('div');
+                //divContentBox.className = "content-box";
                 var divContentWrapper = document.createElement('div');
                 divContentWrapper.className = "ou-content-wrapper grid-row";
 
                 divContent.classList.add("col-xs-12");
-                divContent.classList.add("col-sm-9");
+                divContent.classList.add("col-sm-8");
+                divContent.classList.add("col-md-9");
                 divContent.classList.add("col-lg-10");
-                divContent.classList.add("col-xl-11");
+                
                 wrap(divContent, divContentWrapper);
+                //wrap(divContentWrapper, divContentBox);
 
                 //now add divMenuWrapper
                 var divMenuWrapper = document.createElement('div');
                 divMenuWrapper.classList.add("ou-menu-wrapper");
                 divMenuWrapper.classList.add("col-xs-12");
-                divMenuWrapper.classList.add("col-sm-3");
+                divMenuWrapper.classList.add("col-sm-4");
+                divMenuWrapper.classList.add("col-md-3");
                 divMenuWrapper.classList.add("col-lg-2");
-                divMenuWrapper.classList.add("col-xl-1");
                 divContentWrapper.appendChild(divMenuWrapper); //add module to content
             } else {
                 /* Where page contains div with id in putMenuInRightSideOnTheseElementIds, append the menu to div#right-side-wrapper */
@@ -217,12 +225,15 @@ function getModulesForPage(courseId, userId) {
 						case "Assignment":
 							iconType = "icon-assignment";
 							break;
+                        case "ExternalUrl":
+							iconType = "icon-link";
+							break;
 						default:
 							iconType = "icon-document";
 					}
 					var newItem = document.createElement('div');
 					newItem.className = 'ou-menu-item-wrapper';
-					var itemLink = 'https://universityofoxford.instructure.com/courses/' + courseId + '/modules/items/' + itemId;  //construct hopefully app-compatible URL
+					var itemLink = '/courses/' + courseId + '/modules/items/' + itemId;  //construct hopefully app-compatible URL
 					newItem.innerHTML = '<a class="'+iconType+'" title="'+itemTitle+'" href="'+itemLink+'">'+itemTitle+'</a>';
 					moduleItemsWrapper.appendChild(newItem); //add item to module
 					
