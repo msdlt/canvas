@@ -1,0 +1,183 @@
+/* START - Styles for cards on Modules page */
+.ou-ModuleCard{
+	box-sizing: border-box;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+	border-radius: 6px;
+	overflow: hidden;
+	background: #fff;
+	width: 100%;
+	/*max-width: 262px;*/
+	display: inline-block;
+	vertical-align: top;
+	margin: 0px auto 36px auto;
+}
+.ou-ModuleCard__header_hero {
+	box-sizing: border-box;
+	height: 120px;
+	border: 1px solid rgba(0,0,0,0.1);
+	/* for full color tile */
+	padding: 35px 20px 0px 20px;
+}
+
+.ou-ModuleCard__header_hero_short {
+	box-sizing: border-box;
+	height: 90px;
+	border: 1px solid rgba(0,0,0,0.1);
+	/* for full color tile */
+	padding: 25px 20px 0px 20px;
+}
+
+.ou-ModuleCard__header_content {
+	box-sizing: border-box;
+	padding: 12px 18px 0;
+	background: #fff;
+}
+.ou-ModuleCard__header-title {
+	transition: all 0.2s ease-out;
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	padding: 0;
+	margin: 0;
+	line-height: 1.3;
+	/* for full color tile */
+	font-size: 2em;
+	color: #fff;
+	/*font-size: 14px;*/
+	font-weight: bold;
+}
+.ou-ModuleCard__header-subtitle {
+	line-height: 1.3;
+	padding: 0 0 10px 0;
+	margin-top: 4px;
+	/* for full color tile */
+	color: #ddd;
+	/*color: rgb(108, 117, 124);*/
+}
+
+.ou-ModuleCard__header-subtitle-short {
+	line-height: 1.3;
+	font-size: 0.5em;
+	padding-left: 10px;
+	/*padding: 0 0 10px 0;*/
+	/*margin-top: 4px;*/
+	/* for full color tile */
+	color: #ddd;
+	/*color: rgb(108, 117, 124);*/
+}
+
+.ou-ModuleCard a {
+	text-decoration: none !important;
+}
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.ou-top_button {
+	margin-left: 10px;
+}
+/* END- Styles for cards on Modules page */
+
+/* START - Styles for progress bar */
+.ou-space-before-progress-bar {
+  margin-top: 3em;
+}
+
+.ou-ProgressBar {
+  height: 15px;
+  margin-bottom: 3em;
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid #aaa;
+  background: #fff;
+  overflow: hidden;
+}
+
+.ou-ProgressBarBar {
+  height: 100%;
+}
+
+.ou-ProgressBar.welcome .ou-ProgressBarBar {
+  border: 1px solid #D89E17;
+  background-image: linear-gradient(to bottom, #D89E17, #D89E17) !important;
+}
+
+.ou-ProgressBar.module_1 .ou-ProgressBarBar {
+  border: 1px solid #91b2c6;
+  background-image: linear-gradient(to bottom, #91b2c6, #91b2c6) !important;
+}
+
+.ou-ProgressBar.module_2 .ou-ProgressBarBar {
+  border: 1px solid #517f96;
+  background-image: linear-gradient(to bottom, #517f96, #517f96) !important;
+}
+
+.ou-ProgressBar.module_3 .ou-ProgressBarBar {
+  border: 1px solid #1c4f68;
+  background-image: linear-gradient(to bottom, #1c4f68, #1c4f68) !important;
+}
+
+.ou-ProgressBar.module_4 .ou-ProgressBarBar {
+  border: 1px solid #4a104c;
+  background-image: linear-gradient(to bottom, #4a104c, #4a104c) !important;
+}
+
+.ou-ProgressBar.module_5 .ou-ProgressBarBar {
+  border: 1px solid #37511b;
+  background-image: linear-gradient(to bottom, #37511b, #37511b) !important;
+}
+
+.ou-ProgressBar.module_6 .ou-ProgressBarBar {
+  border: 1px solid #640D14;
+  background-image: linear-gradient(to bottom, #640D14, #640D14) !important;
+}
+
+.ou-ProgressBar.module_7 .ou-ProgressBarBar {
+  border: 1px solid #b29295;
+  background-image: linear-gradient(to bottom, #b29295, #b29295) !important;
+}
+
+.ou-ProgressBar.conclusion .ou-ProgressBarBar {
+  border: 1px solid #0b1e50;
+  background-image: linear-gradient(to bottom, #0b1e50, #0b1e50) !important;
+}
+
+/* END- Styles for progress bar */
+
+/* START - Styles from Bootstrap 3.3.7 */
+.visible-lg-inline {
+  display: none !important;
+}
+@media (min-width: 1200px) {
+  .visible-lg-inline {
+    display: inline !important;
+  }
+}
+
+.embed-responsive {
+  position: relative;
+  display: block;
+  height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.embed-responsive .embed-responsive-item,
+.embed-responsive iframe,
+.embed-responsive embed,
+.embed-responsive object,
+.embed-responsive video {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.embed-responsive-16by9 {
+  padding-bottom: 56.25%;
+}
+.embed-responsive-4by3 {
+  padding-bottom: 75%;
+}
+/* END- Styles from Bootstrap 3.3.7 */
