@@ -18,14 +18,14 @@ var moduleColours = ['#e8ab1e','#91b2c6','#517f96','#1c4f68','#400b42','#293f11'
 var delimiter = '.' //The character used to separate your module name and module description
 
 //From: https://stackoverflow.com/questions/4793604/how-to-insert-an-element-after-another-element-in-javascript-without-using-a-lib
-function insertAfter(newNode, referenceNode) {
+function msd_insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
 
 /* Trying plain JS so that it works in the app as well */
-function domReady () {
+function msd_domReady () {
 	//populate progress bars
-	showProgressBars();
+	msd_showProgressBars();
 	if(divCourseHomeContent && divContextModulesContainer){
 		//we're in the modules page as a home page
 		//first delete any existing nav container
@@ -40,11 +40,11 @@ function domReady () {
 		moduleNav.innerHTML = '<a id="module_nav_anchor"></a>';
 		divContent.insertBefore(moduleNav, divContent.childNodes[0]); 
 		//now get modules from api
-		getSelfThenModules();
+		msd_getSelfThenModules();
 	} else if(divCourseHomeContent){
 		//we're in a home page
-		rewriteModuleLinks();
-        getSelfThenModules(); //testing
+		msd_rewriteModuleLinks();
+        msd_getSelfThenModules(); //testing
 	}
 }
 
@@ -53,7 +53,7 @@ function domReady () {
 if ( document.addEventListener ) {
 	document.addEventListener( "DOMContentLoaded", function(){
 		document.removeEventListener( "DOMContentLoaded", arguments.callee, false);
-		domReady();
+		msd_domReady();
 	}, false );
 // If IE event model is used
 } else if ( document.attachEvent ) {
@@ -61,7 +61,7 @@ if ( document.addEventListener ) {
 	document.attachEvent("onreadystatechange", function(){
 		if ( document.readyState === "complete" ) {
 			document.detachEvent( "onreadystatechange", arguments.callee );
-			domReady();
+			msd_domReady();
 		}
 	});
 }
@@ -69,8 +69,8 @@ if ( document.addEventListener ) {
 /*
  * Get self id
  */
-function getSelfThenModules() {
-	var csrfToken = getCsrfToken();
+function msd_getSelfThenModules() {
+	var csrfToken = msd_getCsrfToken();
 	fetch('/api/v1/users/self',{
 			method: 'GET',
 			credentials: 'include',
@@ -79,10 +79,10 @@ function getSelfThenModules() {
 				"X-CSRF-Token": csrfToken
 			}
 		})
-		.then(status)
-		.then(json)
+		.then(msd_status)
+		.then(msd_json)
 		.then(function(data) {
-			getModules(initCourseId, data.id);
+			msd_getModules(initCourseId, data.id);
 		})
 		.catch(function(error) {
 			console.log('getSelfId Request failed', error);
@@ -93,8 +93,8 @@ function getSelfThenModules() {
 /*
  * Get modules for courseId
  */
-function getModules(courseId, userId) {
-	var csrfToken = getCsrfToken();
+function msd_getModules(courseId, userId) {
+	var csrfToken = msd_getCsrfToken();
 	fetch('/api/v1/courses/' + courseId + '/modules?include=items&student_id=' + userId,{
 			method: 'GET',
 			credentials: 'include',
@@ -103,8 +103,8 @@ function getModules(courseId, userId) {
 				"X-CSRF-Token": csrfToken
 			}
 		})
-		.then(status)
-		.then(json)
+		.then(msd_status)
+		.then(msd_json)
 		.then(function(data) {
             console.log(data);
 			/*var newRow; //store parent row to append to between iterations
@@ -187,7 +187,7 @@ function getModules(courseId, userId) {
 			});*/
 		})
 		.catch(function(error) {
-			console.log('getModules request failed', error);
+			console.log('msd_getModules request failed', error);
 		}
 	);
 }
@@ -197,7 +197,7 @@ function getModules(courseId, userId) {
  * x = module number
  * y = % complete
  */
-function showProgressBars() {
+function msd_showProgressBars() {
 	//get all elements with classname ou-insert-progress-bar
 	var progressBarPlaceholders = document.getElementsByClassName('ou-insert-progress-bar');
 	Array.prototype.forEach.call(progressBarPlaceholders, function(progressBarPlaceholder) {
@@ -216,14 +216,14 @@ function showProgressBars() {
 				'<div class="ou-ProgressBar ' + className + '" style="width: 100%; height: 15px;" role="progressbar" aria-valuemax="100" aria-valuemin="0" aria-valuenow="'+ value +'">' +
 				'	<div class="ou-ProgressBarBar" style="width: '+ value +'%;" title="'+ value +'%"></div>' +
 				'</div>';
-		//insert it after the placeholder using the function insertAfter
-		insertAfter(progressBarContainer, progressBarPlaceholder);
+		//insert it after the placeholder using the function msd_insertAfter
+		msd_insertAfter(progressBarContainer, progressBarPlaceholder);
 		//now delete the placeholder
 		progressBarPlaceholder.parentNode.removeChild(progressBarPlaceholder);
 	});
 }
 
-function rewriteModuleLinks() {
+function msd_rewriteModuleLinks() {
 	/* START rewriting links to go to Modules anchor */
 	var moduleLinks = document.getElementsByTagName('a'), i;
     for (i in moduleLinks) {
@@ -249,7 +249,7 @@ function rewriteModuleLinks() {
 /*
  * Function which returns a promise (and error if rejected) if response status is OK
  */
-function status(response) {
+function msd_status(response) {
 	if (response.status >= 200 && response.status < 300) {
 		return Promise.resolve(response)
 	} else {
@@ -259,13 +259,13 @@ function status(response) {
 /*
  * Function which returns json from response
  */
-function json(response) {
+function msd_json(response) {
 	return response.json()
 }
 /*
  * Function which returns csrf_token from cookie see: https://community.canvaslms.com/thread/22500-mobile-javascript-development
  */
-function getCsrfToken() {
+function msd_getCsrfToken() {
 	var csrfRegex = new RegExp('^_csrf_token=(.*)$');
 	var csrf;
 	var cookies = document.cookie.split(';');
