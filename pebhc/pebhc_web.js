@@ -8,8 +8,8 @@
  */
 
 /* Global variables */
-var courseId = getCourseId(); //which course are we in
-var moduleItemId = getParameterByName('module_item_id');  //used to id active page where data aren't in ENV
+var courseId = msd_getCourseId(); //which course are we in
+var moduleItemId = msd_getParameterByName('module_item_id');  //used to id active page where data aren't in ENV
 
 var divPageTitle = document.querySelectorAll('.page-title')[0];
 
@@ -42,17 +42,17 @@ var putMenuInRightSideOnTheseElementIds=new Array(
 var divContent = document.getElementById('content');
 
 /* Trying plain JS so that it works in the app as well */
-function domReady () {
-	if(divContent && courseId && courseId==2777 && elementsWithTheseIdsDontExist(dontShowMenuOnTheseElementIds) && elementsWithTheseClassesDontExist(dontShowMenuOnTheseElementClasses)){
-		getSelfThenModulesForPage();
+function msd_domReady () {
+	if(divContent && courseId && courseId==2777 && msd_elementsWithTheseIdsDontExist(dontShowMenuOnTheseElementIds) && msd_elementsWithTheseClassesDontExist(dontShowMenuOnTheseElementClasses)){
+		msd_getSelfThenModulesForPage();
 	} 
 }
 
 /**
  * Get self id
  */
-function getSelfThenModulesForPage() {
-	var csrfToken = getCsrfToken();
+function msd_getSelfThenModulesForPage() {
+	var csrfToken = msd_getCsrfToken();
 	fetch('/api/v1/users/self',{
 			method: 'GET',
 			credentials: 'include',
@@ -61,10 +61,10 @@ function getSelfThenModulesForPage() {
 				"X-CSRF-Token": csrfToken
 			}
 		})
-		.then(status)
-		.then(json)
+		.then(msd_status)
+		.then(msd_json)
 		.then(function(data) {
-			getModulesForPage(courseId, data.id);
+			msd_getModulesForPage(courseId, data.id);
 		})
 		.catch(function(error) {
 			console.log('getSelfId Request failed', error);
@@ -77,7 +77,7 @@ function getSelfThenModulesForPage() {
  * @param {string} ids[] - ids to look for
  * @returns {boolean}
  */
-function elementsWithTheseIdsDontExist(ids) {
+function msd_elementsWithTheseIdsDontExist(ids) {
     for(var i = 0; i < ids.length; i++) {
         if(document.getElementById(ids[i])!==null){
             return false; //it does exist
@@ -91,7 +91,7 @@ function elementsWithTheseIdsDontExist(ids) {
  * @param {string} classes[] - classes to look for
  * @returns {boolean}
  */
-function elementsWithTheseClassesDontExist(classes) {
+function msd_elementsWithTheseClassesDontExist(classes) {
    for(var i = 0; i < classes.length; i++) {
        console.log(classes[i]);
        console.log(document.querySelectorAll('.'+classes[i]));
@@ -108,8 +108,8 @@ function elementsWithTheseClassesDontExist(classes) {
  * @param {number} userId - ID of user - used to return progress info.
  * TODO make userId optional
  */
-function getModulesForPage(courseId, userId) {
-	var csrfToken = getCsrfToken();
+function msd_getModulesForPage(courseId, userId) {
+	var csrfToken = msd_getCsrfToken();
 	fetch('/api/v1/courses/' + courseId + '/modules?include=items&student_id=' + userId,{
 			method: 'GET',
 			credentials: 'include',
@@ -118,10 +118,10 @@ function getModulesForPage(courseId, userId) {
 				"X-CSRF-Token": csrfToken
 			}
 		})
-		.then(status)
-		.then(json)
+		.then(msd_status)
+		.then(msd_json)
 		.then(function(data) {
-			if(elementsWithTheseIdsDontExist(putMenuInRightSideOnTheseElementIds)) {
+			if(msd_elementsWithTheseIdsDontExist(putMenuInRightSideOnTheseElementIds)) {
                 /* In most cases, create a new column for the menu: creating a content-wrapper and moving divContent into it*/
                 //var divContentBox = document.createElement('div');
                 //divContentBox.className = "content-box";
@@ -133,7 +133,7 @@ function getModulesForPage(courseId, userId) {
                 divContent.classList.add("col-md-9");
                 divContent.classList.add("col-lg-10");
                 
-                wrap(divContent, divContentWrapper);
+                msd_wrap(divContent, divContentWrapper);
                 //wrap(divContentWrapper, divContentBox);
 
                 //now add divMenuWrapper
@@ -303,7 +303,7 @@ function getModulesForPage(courseId, userId) {
 if ( document.addEventListener ) {
 	document.addEventListener( "DOMContentLoaded", function(){
 		document.removeEventListener( "DOMContentLoaded", arguments.callee, false);
-		domReady();
+		msd_domReady();
 	}, false );
 // If IE event model is used
 } else if ( document.attachEvent ) {
@@ -311,7 +311,7 @@ if ( document.addEventListener ) {
 	document.attachEvent("onreadystatechange", function(){
 		if ( document.readyState === "complete" ) {
 			document.detachEvent( "onreadystatechange", arguments.callee );
-			domReady();
+			msd_domReady();
 		}
 	});
 }
@@ -319,7 +319,7 @@ if ( document.addEventListener ) {
 /*
  * Function which returns a promise (and error if rejected) if response status is OK
  */
-function status(response) {
+function msd_status(response) {
 	if (response.status >= 200 && response.status < 300) {
 		return Promise.resolve(response)
 	} else {
@@ -329,13 +329,13 @@ function status(response) {
 /*
  * Function which returns json from response
  */
-function json(response) {
+function msd_json(response) {
 	return response.json()
 }
 /*
  * Function which returns csrf_token from cookie see: https://community.canvaslms.com/thread/22500-mobile-javascript-development
  */
-function getCsrfToken() {
+function msd_getCsrfToken() {
 	var csrfRegex = new RegExp('^_csrf_token=(.*)$');
 	var csrf;
 	var cookies = document.cookie.split(';');
@@ -355,7 +355,7 @@ function getCsrfToken() {
  * @param {element} toWrap - element to be wrapped
  * @param {element} [wrapper] - element to wrap it in - new div if not provided
  */
-var wrap = function (toWrap, wrapper) {
+var msd_wrap = function (toWrap, wrapper) {
     wrapper = wrapper || document.createElement('div');
     toWrap.parentNode.appendChild(wrapper);
     return wrapper.appendChild(toWrap);
@@ -366,7 +366,7 @@ var wrap = function (toWrap, wrapper) {
  * @param {string} name - name of query parameter
  * @param {string} [url=window.location.href] - url 
  */
-function getParameterByName(name, url) {
+function msd_getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -381,7 +381,7 @@ function getParameterByName(name, url) {
  * @param {string} name - name of query parameter
  * @param {string} [url=window.location.href] - url 
  */
-function getCourseId() {
+function msd_getCourseId() {
     var courseId = ENV.COURSE_ID || ENV.course_id;
     if(!courseId){
         var urlPartIncludingCourseId = window.location.href.split("courses/")[1]; 
