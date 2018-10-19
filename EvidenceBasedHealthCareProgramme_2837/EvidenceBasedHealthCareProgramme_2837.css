@@ -1,0 +1,9 @@
+/* set colour og background for gists */
+table.highlight.tab-size.js-file-line-container {
+    background-color: rgb(245, 245, 245);
+}
+
+p.r-output table.highlight.tab-size.js-file-line-container {
+    background-color: rgb(255, 255, 255);
+}
+
