@@ -80,8 +80,10 @@
                 });
                 var strTableSelectors = aTableSelectors.join(", ");
                 aTableSelectors = undefined;
-                uobSetDocumentStyle(document, strTableSelectors, "display: none;");
-                uobAddComponents(document.getElementById('content'));
+                $(function() {
+                    uobSetDocumentStyle(document, strTableSelectors, "display: none;");
+                    uobAddComponents(document.getElementById('content'));
+                });
             });
         });    
     });
@@ -996,5 +998,6 @@
         });
 
         return(iCounter);
-    }
+    }    
+    
 })();
