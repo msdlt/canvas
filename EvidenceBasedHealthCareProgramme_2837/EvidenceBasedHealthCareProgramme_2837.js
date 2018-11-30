@@ -18,6 +18,23 @@
         script.src = url;
         document.getElementsByTagName("head")[0].appendChild(script);
     }
+    
+    /* MathJax congig before MathJax loaded 
+        window.MathJax = {
+            extensions: ["tex2jax.js"],
+            jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+            extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "a11y/accessibility-menu.js"],
+            TeX: {
+                extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]
+            },
+            tex2jax: {
+                inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+                displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+                processEscapes: true
+            }
+        };*/
+    
+    
     // First load jQuery and then load jQuery UI
     //loadScript("https://code.jquery.com/jquery-1.9.1.min.js", function () {
     //Now load anything that depenfds on JQuery
@@ -78,7 +95,8 @@
                     {group: "Box",		label: "Question",		class: "question",		category: 1},
                     {group: "Box",		label: "Quote",			class: "quote",			category: 1},
                     {group: "Box",		label: "Quote 6699*",	class: "quote6699",		category: 2},
-                    {group: "Box",		label: "Header",		class: "header",		category: 1},
+                    {group: "Box",		label: "Header",		class: "header",      category: 1},
+                    {group: "Box",		label: "Group",		    class: "group",		  category: 1}, //UoO
 
                     {group: "Layout",	label: "Accordion",		class: "accordion",		category: 1},
                     {group: "Layout",	label: "Accordion EA",	class: "accordion-ea",	category: 1},

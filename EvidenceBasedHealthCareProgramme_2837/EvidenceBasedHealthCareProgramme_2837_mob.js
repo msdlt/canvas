@@ -16,6 +16,7 @@
         {group: "Box",		label: "Quote",			class: "quote",			category: 1},
         {group: "Box",		label: "Quote 6699*",	class: "quote6699",		category: 2},
         {group: "Box",		label: "Header",		class: "header",		category: 1},
+        {group: "Box",		label: "Group",		    class: "group",		  category: 1}, //UoO
 
         {group: "Layout",	label: "Accordion",		class: "accordion",		category: 1},
         {group: "Layout",	label: "Accordion EA",	class: "accordion-ea",	category: 1},
@@ -63,26 +64,26 @@
     loadScript("https://code.jquery.com/jquery-1.9.1.min.js", function () {
         //Now load anything that depenfds on JQuery
         loadScript("https://cdnjs.cloudflare.com/ajax/libs/gist-embed/2.7.1/gist-embed.min.js", function () {   
+            //should be able to use GistEmbed
             loadScript("https://code.jquery.com/ui/1.12.1/jquery-ui.js", function () {   
-                //should be able to use 
-
-
-                //START UoO PlainJS version
-
-                // ================================================================================
-                // Amend document's CSS to hide all tables with uob- styles.
-                // --------------------------------------------------------------------------------
-                var aTableSelectors = [];
-                Array.prototype.forEach.call(aTableStyles, function(value, index){
-                    if (index > 0 && value.group != "Table") {
-                        aTableSelectors.push("table.uob-" + value.class);
-                    }
-                });
-                var strTableSelectors = aTableSelectors.join(", ");
-                aTableSelectors = undefined;
-                $(function() {
-                    uobSetDocumentStyle(document, strTableSelectors, "display: none;");
-                    uobAddComponents(document.getElementById('content'));
+                //should be able to use JQuery UI
+                loadScript("https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML", function () { 
+                    //START UoO PlainJS version
+                    // ================================================================================
+                    // Amend document's CSS to hide all tables with uob- styles.
+                    // --------------------------------------------------------------------------------
+                    var aTableSelectors = [];
+                    Array.prototype.forEach.call(aTableStyles, function(value, index){
+                        if (index > 0 && value.group != "Table") {
+                            aTableSelectors.push("table.uob-" + value.class);
+                        }
+                    });
+                    var strTableSelectors = aTableSelectors.join(", ");
+                    aTableSelectors = undefined;
+                    $(function() {
+                        uobSetDocumentStyle(document, strTableSelectors, "display: none;");
+                        uobAddComponents(document.getElementById('content'));
+                    });
                 });
             });
         });    

@@ -47,7 +47,7 @@ table.highlight.tab-size.js-file-line-container {
 	display: none !important;
 }
 
-/* Hides the +Courses button on the Admin > Courses page. */
+/* Hides the +Courses button on the Admin > Courses page. 
 
 ._2wltC1u._2OGXSso button._3Zltvf_._3C6pvc5._2mW8Gy7 {
 display: none;
@@ -56,7 +56,7 @@ display: none;
 
 ._2dKWES7._2rmk2V9 button.OZcxN3v._38BfRnZ._2T4NixU._2Gd45JB {
 display: none;
-}
+}*/
 
 
 
@@ -412,6 +412,12 @@ span.uob-quote99 {
 
 .uob-quote {
 	fill: #ff2222;
+}
+
+.uob-group {
+    border: none;
+    border-radius: 0px;
+    border-left: 15px solid #EEDDFF;
 }
 
 span.uob-nowrap {
