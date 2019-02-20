@@ -8,6 +8,26 @@ table.highlight.tab-size.js-file-line-container {
     font-size: 14px;
 }
 
+pre, pre.prettyprint {
+  padding: 0.1em 0.5em 0.1em 1em !important;
+  font-size: 0.9rem !important;
+  border: 1px solid;
+  border-color: #ddd #ddd #ccc !important;
+  border-radius: 3px;
+  background-color: #fff;
+}
+
+code {
+  /*padding: 2px 4px 2px 4px !important;*/
+  background-color: #fff !important;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+pre code.hljs.stata {
+  padding: 0px;
+}
+
 /*p.r-output table.highlight.tab-size.js-file-line-container {
     background-color: rgb(255, 255, 255);
 }*/
@@ -325,7 +345,7 @@ body.modal #modal-box.login-box h1 {
 	background-color: #EFEFEF;
 }
 
-.uob-tip, .uob-info, .uob-warning, .uob-question, .uob-quote, .uob-box {
+.uob-tip, .uob-info, .uob-warning, .uob-question, .uob-quote, .uob-group, .uob-box {
 	margin-top: 1em;
 	margin-bottom: 1em;
 	padding: .5em .5em .5em 62px;
@@ -738,4 +758,77 @@ table.uob-stylehead, table.uob-hidehead, table.uob-hideleftside, table.uob-hider
 /********************************************************************************
  * END - UoO Styles for cards on Modules page 
 *********************************************************************************/
+
+/*highlight.js styles for github-gist theme*/
+/**
+ * GitHub Gist Theme
+ * Author : Louis Barranqueiro - https://github.com/LouisBarranqueiro
+ */
+
+.hljs {
+  display: block;
+  /*background: white;*/
+  padding: 0.5em;
+  color: #333333;
+  overflow-x: auto;
+}
+
+.hljs-comment,
+.hljs-meta {
+  color: #969896;
+}
+
+.hljs-string,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-strong,
+.hljs-emphasis,
+.hljs-quote {
+  color: #df5000;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-type {
+  color: #a71d5d;
+}
+
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-attribute {
+  color: #0086b3;
+}
+
+.hljs-section,
+.hljs-name {
+  color: #63a35c;
+}
+
+.hljs-tag {
+  color: #333333;
+}
+
+.hljs-title,
+.hljs-attr,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #795da3;
+}
+
+.hljs-addition {
+  color: #55a532;
+  background-color: #eaffea;
+}
+
+.hljs-deletion {
+  color: #bd2c00;
+  background-color: #ffecec;
+}
+
+.hljs-link {
+  text-decoration: underline;
+}
 

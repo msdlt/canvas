@@ -64,25 +64,34 @@
     loadScript("https://code.jquery.com/jquery-1.9.1.min.js", function () {
         //Now load anything that depenfds on JQuery
         loadScript("https://cdnjs.cloudflare.com/ajax/libs/gist-embed/2.7.1/gist-embed.min.js", function () {   
-            //should be able to use GistEmbed
-            loadScript("https://code.jquery.com/ui/1.12.1/jquery-ui.js", function () {   
-                //should be able to use JQuery UI
-                loadScript("https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML", function () { 
-                    //START UoO PlainJS version
-                    // ================================================================================
-                    // Amend document's CSS to hide all tables with uob- styles.
-                    // --------------------------------------------------------------------------------
-                    var aTableSelectors = [];
-                    Array.prototype.forEach.call(aTableStyles, function(value, index){
-                        if (index > 0 && value.group != "Table") {
-                            aTableSelectors.push("table.uob-" + value.class);
-                        }
-                    });
-                    var strTableSelectors = aTableSelectors.join(", ");
-                    aTableSelectors = undefined;
-                    $(function() {
-                        uobSetDocumentStyle(document, strTableSelectors, "display: none;");
-                        uobAddComponents(document.getElementById('content'));
+            //TODO - remove gist embed if not used //should be able to use GistEmbed
+            loadScript("https://learntech.imsu.ox.ac.uk/canvas-libs/highlight/highlight.pack.js", function () {
+                //should be able to use highlight.js - version above currently works for R and Stata only
+                hljs.initHighlightingOnLoad();
+                loadScript("https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js", function () {
+                    //should now be able to run prettify.js - comes with various built-in languages but not R, so need to load R below
+                    loadScript("https://learntech.imsu.ox.ac.uk/canvas-libs/prettify/lang-r.js", function () {
+                        loadScript("https://code.jquery.com/ui/1.12.1/jquery-ui.js", function () {   
+                            //should be able to use JQuery UI
+                            loadScript("https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML", function () { 
+                                //START UoO PlainJS version
+                                // ================================================================================
+                                // Amend document's CSS to hide all tables with uob- styles.
+                                // --------------------------------------------------------------------------------
+                                var aTableSelectors = [];
+                                Array.prototype.forEach.call(aTableStyles, function(value, index){
+                                    if (index > 0 && value.group != "Table") {
+                                        aTableSelectors.push("table.uob-" + value.class);
+                                    }
+                                });
+                                var strTableSelectors = aTableSelectors.join(", ");
+                                aTableSelectors = undefined;
+                                $(function() {
+                                    uobSetDocumentStyle(document, strTableSelectors, "display: none;");
+                                    uobAddComponents(document.getElementById('content'));
+                                });
+                            });
+                        });
                     });
                 });
             });
