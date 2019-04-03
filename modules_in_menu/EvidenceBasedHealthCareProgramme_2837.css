@@ -1,3 +1,6 @@
+/********************************************************************************
+ * START - UoO Styles for sub-modules in lh navigation
+*********************************************************************************/
 ul.section-tabs-sub {
     list-style: none;
     margin: 0;
@@ -9,7 +12,7 @@ a.section-link-sub {
     text-decoration: none;
     color: var(--ic-brand-font-color-dark);
     border-radius: 3px;
-    padding: 8px 12px 8px 24px;
+    padding: 4px 12px 4px 24px;
     white-space:nowrap;
     overflow: hidden;
     text-overflow: ellipsis;  
@@ -38,3 +41,89 @@ a.section-link-sub.active:focus{
 a.section-link-sub.active:hover,.list-view a.active:focus{
     background-color:var(--ic-brand-primary)
 }
+/********************************************************************************
+ * END - UoO Styles for sub-modules in lh navigation
+*********************************************************************************/
+
+/*div.context_modules_sortable_container { Style attempting to reduce flicker when showing only active Module in Modules page
+    visibility: hidden;
+}*/
+
+/********************************************************************************
+ * START - UoO Styles for cards on Modules page 
+*********************************************************************************/
+.ou-ModuleCard{
+	box-sizing: border-box;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+	border-radius: 6px;
+	overflow: hidden;
+	background: #fff;
+	width: 100%;
+	/*max-width: 262px;*/
+	display: inline-block;
+	vertical-align: top;
+	margin: 0px auto 36px auto;
+}
+
+.ou-ModuleCard__header_hero_short {
+	box-sizing: border-box;
+	height: 100px;
+	border: 1px solid rgba(0,0,0,0.1);
+	/* for full color tile */
+	padding: 25px 20px 0px 20px;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.ou-ModuleCard__header_content {
+	box-sizing: border-box;
+	padding: 0px 18px 0px 18px;
+	background: #fff;
+    text-align: left;
+}
+
+.ou-ModuleCard__header-title {
+	transition: all 0.2s ease-out;
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	padding: 18px 0px 18px 0px;
+	margin: 0 35px 0 0;
+	line-height: 1.3;
+	/* for full color tile */
+	font-size: 14px;
+	color: #fff;
+	/*font-size: 14px;*/
+	font-weight: bold;
+}
+
+.ou-ModuleCard__header-title.no-actions {
+	margin-right: 0px;
+}
+
+.ou-drop-down-arrow {
+    float: right;
+    padding: 8px 0px 0px 0px;
+}
+
+a.al-trigger {
+    padding: 6px 10px 6px 10px;
+}
+
+.icon-mini-arrow-down {
+    color: var(--ic-brand-font-color-dark);
+}
+
+.ou-ModuleCard a {
+	text-decoration: none !important;
+}
+.ellipsis {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.ou-top_button {
+	margin-left: 10px;
+}
+/********************************************************************************
+ * END - UoO Styles for cards on Modules page 
+*********************************************************************************/

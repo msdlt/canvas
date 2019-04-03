@@ -43,9 +43,9 @@
     // TODO Could - show completion either on links or as e.g 10/12 - will have to reinstate msd_getSelfThenModules AND chcek that the user is a students and will therefore have completion data
 
     /* Configurable variables */
-    var showOnModulesHomePage = 0;	//Should the module tiles be shown at the top of the Modules Home Page. 0 = No; 1 = Yes. Suggest defaulting to 0, so all courses using the Modules Home Page aren't immediately affected when this is applied to a subaccount.
+    //var showOnModulesHomePage = 1;	//Should the module tiles be shown at the top of the Modules Home Page. 0 = No; 1 = Yes. Suggest defaulting to 0, so all courses using the Modules Home Page aren't immediately affected when this is applied to a subaccount.
     var noOfColumnsPerRow = 4;  //no of columns per row of tiles at top of Modules page - 1, 2, 3, 4, 6 or 12 - ONLY USE 4 for the moment
-    var tileImagesFolderName = "tiles";
+    var tileImagesFolderName = "tiles"; //CHECK
     /* first 9 are requested colors, rest are randomly selected from: https://www.ox.ac.uk/public-affairs/style-guide/digital-style-guide */
     //JHM 2018-20-16: Removed some that were too light, and reordered some that did not look good next to each other, but only up to the first 14 colours (3.5 lines)
     var moduleColours = [
@@ -61,18 +61,22 @@
         '#a79d96','#be0f34','#001c3d','#ac48bf',
         '#9c4700','#c7302b','#ebc4cb','#1daced'
     ];
+    var showItemLinks = 1; //whether or not to show drop-down links to items within Modules in tiles
 
     /* DOM elements to chcek for */
     var divCourseHomeContent = document.getElementById('course_home_content');  //is this page Home
     var divContent = document.getElementById('content');
     var divContextModulesContainer = document.getElementById('context_modules_sortable_container');  //are we on the Modules page
     var aModules = document.querySelector('li.section a[title="Modules"]'); //retutrns breadcrumbs AND lh Nav
-    var moduleIdByModuleItemId = [] //used to 
+    var moduleIdByModuleItemId = [] //used to store moduleIds using the ModuleItemId (as shown in url for pages, etc) so we can show active sub-modules
     
-    var tableHomePageTable = document.getElementById('homePageTable');  //CHECK id of table which will be replaced in Page on web when it is the Home Page
-    var tableHomePageTableTilesOnly = document.getElementById('homePageTableTilesOnly');  //CHECK id of table which will be replaced in Page on web when it is the Home Page - no drop-dwn list of items
+    //var tableHomePageTable = document.getElementById('homePageTable');  //CHECK id of table which will be replaced in Page on web when it is the Home Page
+    //var tableHomePageTableTilesOnly = document.getElementById('homePageTableTilesOnly');  //CHECK id of table which will be replaced in Page on web when it is the Home Page - no drop-dwn list of items
 
+    //Working out where we are 
     var initCourseId = msd_getCourseId();  //which course are we in ONLY WORKS ON WEB
+    var initModuleItemId = msd_getModuleItemId();  //0 or module_item_id from URL (ie only if launched through Modules) 
+    var initModuleId = msd_getModuleId();  //0 or module being viewed within Modules page
 
     var moduleNav;
     var tileImageUrls = [];  //CHECK
@@ -82,9 +86,20 @@
         //New LH menu navigation - show on ALL pages in course
         //get embedded ul of Modules to append to liModules
         if(initCourseId) {
+            if(initModuleId) {
+                //we're on Modules page with link to specific module - let's hide other Modules'
+                var otherModuleDivs = document.querySelectorAll('div.context_module:not([data-module-id="'+initModuleId+'"])'); //should only be one!; //should only be one!
+                Array.prototype.forEach.call(otherModuleDivs, function(otherModuleDiv){
+                    otherModuleDiv.style.display = 'none';    
+                });
+            }
             msd_getModulesAsUl(initCourseId);
+            //if(divContextModulesContainer) {
+            //    divContextModulesContainer.style.visibility = 'visible';  
+            //}
         }
-        if(divCourseHomeContent && divContextModulesContainer && showOnModulesHomePage){
+        
+        /*if(divCourseHomeContent && divContextModulesContainer && showOnModulesHomePage){
             //we're in the modules page as a home page
             //first delete any existing nav container
             var existingModuleNav = document.getElementById('module_nav');
@@ -124,7 +139,7 @@
             if(initCourseId) {
                 msd_getTileFolder(initCourseId);
             }
-        } 
+        }*/
     }
 
     //Function to work out when the DOM is ready: https://stackoverflow.com/questions/1795089/how-can-i-detect-dom-ready-and-add-a-class-without-jquery/1795167#1795167
@@ -246,10 +261,170 @@
             .then(msd_status)
             .then(msd_json)
             .then(function(data) {
-                var listUl = document.createElement("ul");
+                //note - combining creation of lh modules sub-menu and Module tiles on Modules page to avoid repeated loops through data
+                //set up some things before we begin going through Modules
+                var listUl = document.createElement("ul");  //the contianing element for the modules sub-menu
                 listUl.className = "section-tabs-sub";
+                if(divContextModulesContainer && !initModuleId && divCourseHomeContent) {
+                    //only needed on all Modules page IF it is the home page
+                    //first delete any existing nav container
+                    var existingModuleNav = document.getElementById('module_nav');
+                    if(existingModuleNav) {
+                        existingModuleNav.parentNode.removeChild(existingModuleNav);
+                    }
+                    //create our nav container
+                    moduleNav = document.createElement("div");
+                    moduleNav.id = "module_nav";
+                    moduleNav.className = "ou-ModuleCard__box";
+                    moduleNav.innerHTML = '<a id="module_nav_anchor"></a>';
+                    divContent.insertBefore(moduleNav, divContent.childNodes[0]); //insert moduleNav onto page
+                    
+                    divCourseHomeContent.style.display = 'none';
+                    
+                    var newRow; //store parent row to append to between iterations
+                }
+                
                 //run through each module
                 data.forEach(function(module, mindex){
+                    if(divContextModulesContainer && !initModuleId && divCourseHomeContent) {
+                        //only needed on all Modules page
+                        //create row for card
+                        if(mindex % noOfColumnsPerRow === 0) {
+                            newRow = document.createElement("div");
+                            newRow.className = "grid-row center-sm";
+                            moduleNav.appendChild(newRow);	
+                        }
+                        
+                        var newColumn = document.createElement("div");
+
+                        // TODO work out classes for noOfColumnsPerRow != 4
+                        //create column wrapper
+                        newColumn.className = "col-xs-12 col-sm-6 col-lg-3";
+                        newRow.appendChild(newColumn);
+
+                        //create module div
+                        var moduleTile = document.createElement("div");
+                        moduleTile.className = "ou-ModuleCard";
+                        moduleTile.title = module.name;
+
+                        var moduleTileLink = document.createElement("a");
+                        moduleTileLink.href = '/courses/' + initCourseId + '/modules/' + module.id;   
+                        
+                        var moduleTileHeader = document.createElement("div");
+                        moduleTileHeader.className="ou-ModuleCard__header_hero_short";
+                        moduleTileHeader.style.backgroundColor = moduleColours[mindex];
+                        
+                        var moduleTileContent = document.createElement("div");
+                        moduleTileContent.className = "ou-ModuleCard__header_content";
+                       
+                        if(showItemLinks && module.items.length > 0) {
+                            //don't add drop-down if not showItemLinks or if no items in Module
+                            var moduleTileActions = document.createElement("div");
+                            moduleTileActions.className = "ou-drop-down-arrow";
+                            moduleTileActions.title = "Click for contents";
+
+                            var moduleTileArrowButton = document.createElement("a");
+                            moduleTileArrowButton.classList.add("al-trigger");
+                            moduleTileArrowButton.href ="#";
+
+                            var moduleTileArrowIcon = document.createElement("i");
+                            moduleTileArrowIcon.className = "icon-mini-arrow-down";
+
+                            moduleTileArrowButton.appendChild(moduleTileArrowIcon);
+
+                            var moduleTileList = document.createElement("ul");
+                            moduleTileList.id = "toolbar-" + module.id + "-0";
+                            moduleTileList.className = "al-options";
+                            moduleTileList.setAttribute("role", "menu");
+                            moduleTileList.tabIndex = 0;
+                            moduleTileList.setAttribute("aria-hidden",true);
+                            moduleTileList.setAttribute("aria-expanded",false);
+                            moduleTileList.setAttribute("aria-activedescendant","toolbar-" + module.id + "-1");
+                            console.log('creating actions and list');
+                        }
+                    }
+                    //If we're on a page launched via Modules, initModuleItemId != 0 so or if we have launched the whole Modules page (ie need menu at top)
+                    if(initModuleItemId || (divContextModulesContainer && !initModuleId && divCourseHomeContent)) {
+                        module.items.forEach(function(item, iindex){
+                            
+                            moduleIdByModuleItemId[parseInt(item.id)] = item.module_id; //for deciding which sub-module on lh menu is active
+                            
+                            if(divContextModulesContainer && showItemLinks) {
+                                var itemTitle = item.title;
+                                //var moduleId = item.module_id;
+                                var itemId = item.id;
+                                var itemType = item.type;
+                                var iconType;
+                                switch(itemType) {
+                                    case "Page":
+                                        iconType = "icon-document";
+                                        break;
+                                    case "File":
+                                        iconType = "icon-paperclip";
+                                        break;
+                                    case "Discussion":
+                                        iconType = "icon-discussion";
+                                        break;
+                                    case "Quiz":
+                                        iconType = "icon-quiz";
+                                        break;
+                                    case "Assignment":
+                                        iconType = "icon-assignment";
+                                        break;
+                                    case "ExternalUrl":
+                                        iconType = "icon-link";
+                                        break;
+                                    default:
+                                        iconType = "icon-document";
+                                }
+                                var listItem = document.createElement('li');
+                                listItem.className = 'ou-menu-item-wrapper';
+
+                                var listItemDest = '/courses/' + initCourseId + '/modules/items/' + itemId;
+
+                                var listItemLink = document.createElement("a");
+                                listItemLink.className = iconType;
+                                listItemLink.href = listItemDest;
+                                listItemLink.text = itemTitle;
+                                listItemLink.tabindex = -1;
+                                listItemLink.setAttribute("role", "menuitem");
+                                listItemLink.title = itemTitle;
+
+                                listItem.appendChild(listItemLink);
+                                moduleTileList.appendChild(listItem);    
+                                console.log(itemTitle);
+                            }
+                        });
+                    }
+                    if(divContextModulesContainer && !initModuleId && divCourseHomeContent) {
+                        //only needed on all Modules page
+                        
+                        var moduleTileTitle = document.createElement("div");
+                        moduleTileTitle.classList.add("ou-ModuleCard__header-title");
+                        moduleTileTitle.classList.add("ellipsis");
+                        moduleTileTitle.title = module.name;
+                        moduleTileTitle.style.color = moduleColours[mindex];
+                        moduleTileTitle.innerHTML = module.name; 
+
+                        if(showItemLinks && module.items.length > 0) {
+                            //only add actions if required
+                            moduleTileActions.appendChild(moduleTileArrowButton);
+                            moduleTileActions.appendChild(moduleTileList);
+                            moduleTileContent.appendChild(moduleTileActions);
+                            console.log('adding actions');
+                        } else {
+                            //only leave space for actions if we're adding them
+                            moduleTileTitle.classList.add("no-actions");  
+                        }
+
+                        moduleTileContent.appendChild(moduleTileTitle);
+                        moduleTileLink.appendChild(moduleTileHeader);
+                        moduleTileLink.appendChild(moduleTileContent);
+                        moduleTile.appendChild(moduleTileLink);
+                        newColumn.appendChild(moduleTile);
+                    }
+                    
+                    //LH MENU
                     //create li
                     var newItem = document.createElement("li");
                     newItem.className = "section-sub";
@@ -257,20 +432,35 @@
                     //create a
                     var newLink = document.createElement("a");
                     newLink.className = "section-link-sub"; //Note set active if necessary
+                    //console.log(initModuleId + " " + module.id);
+                    //chcek if we need to make one of our sub-menu modules active
+                    if((initModuleItemId && moduleIdByModuleItemId[initModuleItemId] && moduleIdByModuleItemId[initModuleItemId]==module.id) || (initModuleId && initModuleId==parseInt(module.id))) {
+                        //first unactivate all lh menu items
+                        var sectionLinks = document.querySelectorAll('li.section > a.active'); //should only be one!
+                        Array.prototype.forEach.call(sectionLinks, function(sectionLink, i){
+                            //code to remove active from here: http://youmightnotneedjquery.com/
+                            var classNameToRemove = 'active';
+                            if (sectionLink.classList) {
+                                sectionLink.classList.remove(classNameToRemove);    
+                            } else {
+                                sectionLink.className = sectionLink.className.replace(new RegExp('(^|\\b)' + classNameToRemove.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');    
+                            }
+                        });
+                        newLink.classList.add('active');  //make current Module active
+                    }
                     newLink.title = module.name;
                     newLink.href = '/courses/' + courseId + '/modules/' + module.id;   
                     newLink.innerHTML = module.name;
-
                     newItem.appendChild(newLink);
                 });
                 var liModules = aModules.parentNode;
                 liModules.appendChild(listUl);
-                console.log(listUl);
-            })
-            .catch(function(error) {
-                console.log('msd_getModules request failed', error);
-            }
-        );
+            });
+            //NOTE REMOVED FOR DEGUGGING - REINSTATE!!!!!!
+            //.catch(function(error) {
+            //    console.log('msd_getModules request failed', error);
+            //}
+        //);
     }
 
     /*
@@ -406,7 +596,6 @@
 
                             listItem.appendChild(listItemLink);
                             moduleTileList.appendChild(listItem);
-
                         });
 
                         moduleTileActions.appendChild(moduleTileArrowButton);
@@ -525,6 +714,44 @@
             }
         }
         return courseId;
+    }
+    
+    /**
+     * Function which gets find module_item_id from URL - currently ONLY ON WEB
+     * @returns {int} id of module_item or 0 for not found
+     */
+    function msd_getModuleItemId() {
+        var moduleItemTerm = 'module_item_id=';
+        var currentUrl = window.location.href;
+        var moduleItemId = 0; //default to 0/not found
+        var startPos = currentUrl.indexOf(moduleItemTerm); //is this in URL
+        if(startPos != -1) {
+            startPos = startPos + moduleItemTerm.length; //account for length of moduleItemTerm as found beginning position
+            var finishPos = currentUrl.indexOf('&', startPos); //is there another query param after module_item_id=
+            if(finishPos == -1) {
+                finishPos = currentUrl.length;
+            }
+            moduleItemId = parseInt(currentUrl.slice(startPos, finishPos));
+            console.log(startPos + " " + finishPos + " " + currentUrl.slice(startPos, finishPos));
+        }
+        return moduleItemId;
+    }
+    
+    /**
+     * Function which gets find module id from URL - currently ONLY ON WEB
+     * @returns {int} id of module or 0 for not found
+     */
+    function msd_getModuleId() {
+        var moduleIdTerm = 'modules#module_';
+        var currentUrl = window.location.href;
+        var moduleId = 0; //default to 0/not found
+        var startPos = currentUrl.indexOf(moduleIdTerm); //is this in URL
+        if(startPos != -1) {
+            startPos = startPos + moduleIdTerm.length; //account for length of moduleItemTerm as found beginning position
+            moduleId = parseInt(currentUrl.slice(startPos)); //will substring from end
+            //console.log(startPos + " " + finishPos + " " + currentUrl.slice(startPos, finishPos));
+        }
+        return moduleId;
     }
 
     /*
