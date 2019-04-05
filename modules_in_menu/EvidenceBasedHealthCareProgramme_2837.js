@@ -40,8 +40,9 @@
     var divCourseHomeContent = document.getElementById('course_home_content');  //is this page Home
     var divContent = document.getElementById('content');
     var divContextModulesContainer = document.getElementById('context_modules_sortable_container');  //are we on the Modules page
+    var divFooterContent;
     var aModules = document.querySelector('li.section a[title="Modules"]'); //retutrns breadcrumbs AND lh Nav
-    var moduleIdByModuleItemId = [] //used to store moduleIds using the ModuleItemId (as shown in url for pages, etc) so we can show active sub-modules
+    var moduleIdByModuleItemId = [] //used to store moduleIds using the ModuleItemId (as shown in url for pages, etc) so we can show active sub-modules {moduleId: x, moduleName: x, progress: x}
     
     //Working out where we are in Course
     var initCourseId = msd_getCourseId();  //which course are we in ONLY WORKS ON WEB
@@ -180,14 +181,23 @@
                             moduleTileList.setAttribute("aria-hidden",true);
                             moduleTileList.setAttribute("aria-expanded",false);
                             moduleTileList.setAttribute("aria-activedescendant","toolbar-" + module.id + "-1");
-                            console.log('creating actions and list');
+                            //console.log('creating actions and list');
                         }
                     }
                     //If we're on a page launched via Modules, initModuleItemId != 0 so or if we have launched the whole Modules page (ie need menu at top)
                     if(initModuleItemId || (divContextModulesContainer && !initModuleId && divCourseHomeContent)) {
                         module.items.forEach(function(item, iindex){
                             
-                            moduleIdByModuleItemId[parseInt(item.id)] = item.module_id; //for deciding which sub-module on lh menu is active
+                            var progressAsPercentage = Math.round(((iindex+1)/module.items.length)*100);
+                            console.log(iindex,module.items.length,progressAsPercentage);
+                            
+                            var tempObj = {
+                                moduleId: item.module_id, 
+                                moduleName: module.name, 
+                                progress: progressAsPercentage    
+                            }
+                            
+                            moduleIdByModuleItemId[parseInt(item.id)] = tempObj; //for deciding which sub-module on lh menu is active
                             
                             if(divContextModulesContainer && showItemLinks) {
                                 var itemTitle = item.title;
@@ -232,7 +242,7 @@
 
                                 listItem.appendChild(listItemLink);
                                 moduleTileList.appendChild(listItem);    
-                                console.log(itemTitle);
+                                //console.log(itemTitle);
                             }
                         });
                     }
@@ -251,7 +261,7 @@
                             moduleTileActions.appendChild(moduleTileArrowButton);
                             moduleTileActions.appendChild(moduleTileList);
                             moduleTileContent.appendChild(moduleTileActions);
-                            console.log('adding actions');
+                            //console.log('adding actions');
                         } else {
                             //only leave space for actions if we're adding them
                             moduleTileTitle.classList.add("no-actions");  
@@ -274,7 +284,7 @@
                     newLink.className = "section-link-sub"; //Note set active if necessary
                     //console.log(initModuleId + " " + module.id);
                     //chcek if we need to make one of our sub-menu modules active
-                    if((initModuleItemId && moduleIdByModuleItemId[initModuleItemId] && moduleIdByModuleItemId[initModuleItemId]==module.id) || (initModuleId && initModuleId==parseInt(module.id))) {
+                    if((initModuleItemId && moduleIdByModuleItemId[initModuleItemId] && moduleIdByModuleItemId[initModuleItemId].moduleId && moduleIdByModuleItemId[initModuleItemId].moduleId==module.id) || (initModuleId && initModuleId==parseInt(module.id))) {
                         //first unactivate all lh menu items
                         var sectionLinks = document.querySelectorAll('li.section > a.active'); //should only be one!
                         Array.prototype.forEach.call(sectionLinks, function(sectionLink, i){
@@ -295,11 +305,115 @@
                 });
                 var liModules = aModules.parentNode;
                 liModules.appendChild(listUl);
+            
+                //now add Progress Bar
+                msd_showProgressBar();
             })
             .catch(function(error) {
                 console.log('msd_getModules request failed', error);
             }
         );
+    }
+    
+    /*
+     * Function which shows progress bar between Next and Previous buttons IF item shown as part of Module
+     */
+    function msd_showProgressBar() {
+        //can't get footer too early as getElementsByClassName doesn't seem to work as arly as byId
+        var footerContents = document.getElementsByClassName('module-sequence-footer-content');
+        //console.log(footerContents);
+        //console.log(footerContents.length);
+        if(footerContents.length > 0) {
+            divFooterContent = footerContents[0];
+            //console.log(divFooterContent);
+        }
+        if(divFooterContent && initModuleItemId) {
+            //we have a footer and we're viewing via Modules
+            var progressBarContainer = document.createElement("div");
+            progressBarContainer.classList.add("ou-ProgBarContainer");
+            var divProgLeftCol = document.createElement("div");
+            divProgLeftCol.classList.add("ou-ProgLeftCol");
+            var divProgRightCol = document.createElement("div");
+            divProgRightCol.classList.add("ou-ProgRightCol");
+            progressBarContainer.appendChild(divProgLeftCol);
+            progressBarContainer.appendChild(divProgRightCol);
+            //Progress bar itself
+            var divProgressBar = document.createElement("div");
+            divProgressBar.classList.add("ou-ProgressBar");
+            divProgressBar.setAttribute('aria-valuemax', 100);
+            divProgressBar.setAttribute('aria-valuemin', 0);
+            divProgressBar.setAttribute('aria-valuenow', moduleIdByModuleItemId[initModuleItemId].progress);
+            var divProgressBarBar = document.createElement("div");
+            divProgressBarBar.classList.add("ou-ProgressBarBar");
+            divProgressBarBar.style.width = moduleIdByModuleItemId[initModuleItemId].progress +'%';
+            divProgressBar.setAttribute('title', 'Position in: ' + moduleIdByModuleItemId[initModuleItemId].moduleName + ' = ' + moduleIdByModuleItemId[initModuleItemId].progress +'%');
+            //divProgressBar.setAttribute('data-html-tooltip-title', moduleIdByModuleItemId[initModuleItemId].moduleName + ': ' + moduleIdByModuleItemId[initModuleItemId].progress +'%');
+            divProgressBar.appendChild(divProgressBarBar);
+            //Wording
+            var divProgressLabel = document.createElement("div");
+            divProgressLabel.textContent = 'Position in module: '
+            
+            divProgLeftCol.appendChild(divProgressLabel);
+            divProgRightCol.appendChild(divProgressBar);
+            /*progressBarContainer.innerHTML = ''+
+                    //'<h4 class="ou-space-before-progress-bar">Current position in ' + moduleIdByModuleItemId[initModuleItemId].moduleName + ':</h4>' +
+                    '<div class="ou-ProgressBar" style="width: 100%; height: 15px;" role="progressbar" aria-valuemax="100" aria-valuemin="0" aria-valuenow="'+ moduleIdByModuleItemId[initModuleItemId].progress +'">' +
+                    '	<div class="ou-ProgressBarBar" style="width: '+ moduleIdByModuleItemId[initModuleItemId].progress +'%;" title="Current position in ' + moduleIdByModuleItemId[initModuleItemId].moduleName + ': '+ moduleIdByModuleItemId[initModuleItemId].progress +'%"></div>' +
+                    '</div>';*/
+            //console.log(divFooterContent);
+            
+            //1. Ceate div with one flexible and two inflexible divs at either end
+            var divColContainer = document.createElement("div");
+            divColContainer.classList.add("ou-ColContainer");
+            var divLeftCol = document.createElement("div");
+            divLeftCol.classList.add("ou-LeftCol");
+            var divCentreCol = document.createElement("div");
+            divCentreCol.classList.add("ou-CentreCol");
+            var divRightCol = document.createElement("div");
+            divRightCol.classList.add("ou-RightCol");
+            //2. Move buttons if present - awkwardly, pevious is just a link and next sits in span -  into the two inflexible ends
+            divColContainer.appendChild(divLeftCol);
+            divColContainer.appendChild(divCentreCol);
+            divColContainer.appendChild(divRightCol);
+            //look for Previous button
+            var previousButton = document.querySelector('a.module-sequence-footer-button--previous');
+            var previousButtonTop;
+            if(previousButton) {
+                divLeftCol.appendChild(previousButton);
+                previousButtonTop = previousButton.cloneNode(true);
+                previousButtonTop.classList.add("ou-PreviousTop"); //make space on right
+            }
+            //look for Next button
+            var nextButton = document.querySelector('span.module-sequence-footer-button--next');
+            var nextButtonTop;
+            if(nextButton) {
+                divRightCol.appendChild(nextButton);
+                nextButtonTop = nextButton.cloneNode(true);
+                nextButtonTop.classList.add("ou-NextTop"); //make space on right
+            }
+            //3. Place new progressBarContainer in the middle flexible div
+            divCentreCol.appendChild(progressBarContainer);
+            divFooterContent.appendChild(divColContainer);
+            
+            //now try cloning prevous and next and adding to appropriate parts of header
+            if(previousButtonTop) {
+                var divHeaderLefts = document.getElementsByClassName('header-left-flex');
+                if(divHeaderLefts.length > 0) {
+                    var divHeaderLeft = divHeaderLefts[0];
+                    divHeaderLeft.insertBefore(previousButtonTop, divHeaderLeft.firstChild); 
+                }
+            }
+            if(nextButtonTop) {
+                var divHeaderRights = document.getElementsByClassName('header-right-flex');
+                if(divHeaderRights.length > 0) {
+                    var divHeaderRight = divHeaderRights[0];
+                    //divHeaderRight.insertBefore(nextButtonTop, divHeaderRight.firstChild);
+                    divHeaderRight.appendChild(nextButtonTop);
+                }
+            }
+            
+            
+        }    
     }
 
     
@@ -374,7 +488,7 @@
                 finishPos = currentUrl.length;
             }
             moduleItemId = parseInt(currentUrl.slice(startPos, finishPos));
-            console.log(startPos + " " + finishPos + " " + currentUrl.slice(startPos, finishPos));
+            //console.log(startPos + " " + finishPos + " " + currentUrl.slice(startPos, finishPos));
         }
         return moduleItemId;
     }

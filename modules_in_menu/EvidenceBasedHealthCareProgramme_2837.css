@@ -49,6 +49,60 @@ a.section-link-sub.active:hover,.list-view a.active:focus{
     visibility: hidden;
 }*/
 
+.ou-ProgressBar {
+  height: 15px;
+  /*margin-bottom: 3em;*/
+  /*width: 100%;*/
+  border-radius: 3px;
+  border: 1px solid #aaa;
+  background: #fff;
+  overflow: hidden;
+}
+
+.ou-ProgressBarBar {
+  height: 100%;
+  border: 1px solid var(--ic-link-color);
+  background-image: linear-gradient(to bottom, var(--ic-link-color), var(--ic-link-color)) !important;
+}
+
+div.ou-ColContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+div.ou-LeftCol, div.ou-RightCol {
+    flex:0 0 auto; /* Forces side columns to stay same width */
+    /*width:100px;*/ /* Sets the width of side columns */
+}
+
+div.ou-CentreCol {
+    flex:1 1 auto; /* Lets middle column shrink/grow to available width */
+    padding: 0px 1em 0px 1em;
+}
+
+.ou-ProgBarContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ou-ProgLeftCol {
+    flex:0 0 auto; /* Forces side columns to stay same width */
+}
+
+.ou-ProgRightCol {
+    flex:1 1 auto; /* Lets middle column shrink/grow to available width */
+    padding: 0px 1em 0px 1em;
+}
+
+.ou-PreviousTop {
+    margin-right: 1em;
+}
+.ou-NextTop {
+    margin-left: 1em;
+}
+
 /********************************************************************************
  * START - UoO Styles for cards on Modules page 
 *********************************************************************************/
@@ -105,7 +159,7 @@ a.section-link-sub.active:hover,.list-view a.active:focus{
     padding: 8px 0px 0px 0px;
 }
 
-a.al-trigger {
+div.ou-drop-down-arrow a.al-trigger {
     padding: 6px 10px 6px 10px;
 }
 
